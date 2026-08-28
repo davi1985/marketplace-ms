@@ -2,7 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { firstValueFrom } from 'rxjs';
-import { serverConfig } from 'src/config/gateway.config';
+import { serviceConfig } from 'src/config/gateway.config';
 
 @Injectable()
 export class ProxyService {
@@ -11,14 +11,14 @@ export class ProxyService {
   constructor(private readonly httpService: HttpService) {}
 
   async proxyRequest<T = any>(
-    serviceName: keyof typeof serverConfig,
+    serviceName: keyof typeof serviceConfig,
     method: string,
     path: string,
     data?: unknown,
     headers?: Record<string, string | undefined>,
     userInfo?: UserInfo,
   ): Promise<AxiosResponse<T>> {
-    const service = serverConfig[serviceName];
+    const service = serviceConfig[serviceName];
     const url = `${service.url}${path}`;
 
     this.logger.log(`Proxying ${method} request to ${serviceName}: ${url}`);
@@ -52,9 +52,9 @@ export class ProxyService {
     }
   }
 
-  async getServiceHealth(serviceName: keyof typeof serverConfig) {
+  async getServiceHealth(serviceName: keyof typeof serviceConfig) {
     try {
-      const service = serverConfig[serviceName];
+      const service = serviceConfig[serviceName];
       const response = await firstValueFrom(
         this.httpService.get<unknown>(`${service.url}/health`, {
           timeout: 3000,
