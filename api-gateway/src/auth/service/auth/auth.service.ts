@@ -34,10 +34,10 @@ export class AuthService {
     }
   }
 
-  async login(loginDto: LoginDTO): Promise<any> {
+  async login(loginDto: LoginDTO): Promise<LoginResponse> {
     try {
       const { data } = await firstValueFrom(
-        this.httpService.post<unknown>(
+        this.httpService.post<LoginResponse>(
           `${serviceConfig.users.url}/login`,
           loginDto,
           {
@@ -55,7 +55,7 @@ export class AuthService {
   async register(registerDto: RegisterDTO) {
     try {
       const { data } = await firstValueFrom(
-        this.httpService.post<unknown>(
+        this.httpService.post<RegisterResponse>(
           `${serviceConfig.users.url}/auth/register`,
           registerDto,
           {
@@ -71,16 +71,31 @@ export class AuthService {
   }
 }
 
+type User = {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  status: string;
+};
+
 type UserSession = {
   valid: boolean;
-  user: {
-    id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    role: string;
-    status: string;
-  } | null;
+  user: User | null;
+};
+
+type LoginResponse = {
+  accessToken: string;
+  refreshToken: string;
+  user: User;
+};
+
+type RegisterResponse = {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
 };
 
 type LoginDTO = {
