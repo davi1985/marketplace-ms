@@ -1,5 +1,9 @@
-import { ExecutionContext, Injectable } from '@nestjs/common';
-import { ThrottlerException, ThrottlerGuard } from '@nestjs/throttler';
+import { Injectable } from '@nestjs/common';
+import {
+  ThrottlerException,
+  ThrottlerGuard,
+  ThrottlerRequest,
+} from '@nestjs/throttler';
 import { Request, Response } from 'express';
 
 @Injectable()
@@ -8,11 +12,7 @@ export class CustomThrottlerGuard extends ThrottlerGuard {
     return Promise.resolve(`${req.ip}-${req.headers['user-agent']}`);
   }
 
-  protected async handlerRequest(
-    context: ExecutionContext,
-    limit: number,
-    ttl: number,
-  ) {
+  protected async handlerRequest({ context, limit, ttl }: ThrottlerRequest) {
     const { req, res } = this.getRequestResponse(context) as {
       req: Request;
       res: Response;
