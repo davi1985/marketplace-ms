@@ -104,6 +104,20 @@ Use the **Authorize** button to provide your JWT Bearer token when accessing pro
       },
       'JWT-auth',
     )
+    .addApiKey(
+      {
+        type: 'apiKey',
+        name: 'x-session-token',
+        in: 'header',
+        description: 'Session token for user validation',
+      },
+      'session-auth',
+    )
+    .addTag('Authentication', 'Authentication and authorization endpoints')
+    .addTag('Users', 'User management endpoints')
+    .addTag('Products', 'Product catalog and management endpoints')
+    .addTag('Payments', 'Payment processing endpoints')
+    .addTag('Health', 'Health check and service status endpoints')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
