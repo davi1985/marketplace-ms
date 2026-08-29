@@ -8,7 +8,7 @@ import { Request, Response } from 'express';
 
 @Injectable()
 export class CustomThrottlerGuard extends ThrottlerGuard {
-  protected getTracker(req: Request) {
+  protected getTracker(req: Request): Promise<string> {
     return Promise.resolve(`${req.ip}-${req.headers['user-agent']}`);
   }
 

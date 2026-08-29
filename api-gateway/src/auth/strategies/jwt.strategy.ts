@@ -1,15 +1,15 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-jwt';
-import { AuthService, JwtTokenPayload } from '../service/auth/auth.service';
+import { AuthService } from '../service/auth/auth.service';
 
-type JwtPayload = JwtTokenPayload;
-
-type AuthenticatedUser = {
-  userId: string;
+type JwtPayload = {
+  sub: string;
   email: string;
   role: string;
   token: string;
+  iat?: number;
+  exp?: number;
 };
 
 type JwtRequest = {
@@ -34,7 +34,7 @@ export class JwtStrategy extends PassportStrategy(Strategy as any) {
     });
   }
 
-  validate(payload: JwtPayload): AuthenticatedUser {
+  validate(payload: JwtPayload) {
     if (!payload) throw new UnauthorizedException();
 
     const user = this.authService.validateJwtToken(payload.token);
@@ -42,10 +42,9 @@ export class JwtStrategy extends PassportStrategy(Strategy as any) {
     if (!user) throw new UnauthorizedException();
 
     return {
-      ...user,
-      userId: user.sub,
-      email: user.email,
-      role: user.role,
+      userId: payload.sub,
+      email: payload.email,
+      role: payload.role,
     };
   }
 }

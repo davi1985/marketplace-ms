@@ -6,11 +6,23 @@ import { LoginRequestDto } from 'src/auth/dtos/login.dto';
 import { RegisterRequestDto } from 'src/auth/dtos/register.dto';
 import { serviceConfig } from 'src/config/gateway.config';
 
-export type JwtTokenPayload = {
-  token: string;
-  sub: string;
+type User = {
+  id: string;
   email: string;
+  firstName: string;
+  lastName: string;
   role: string;
+  status: string;
+};
+
+type UserSession = {
+  valid: boolean;
+  user: User | null;
+};
+
+export type AuthResponse = {
+  access_token: string;
+  user: User;
 };
 
 @Injectable()
@@ -20,9 +32,9 @@ export class AuthService {
     private readonly httpService: HttpService,
   ) {}
 
-  validateJwtToken(token: string): JwtTokenPayload {
+  validateJwtToken(token: string): AuthResponse {
     try {
-      return this.jwtService.verify<JwtTokenPayload>(token);
+      return this.jwtService.verify<AuthResponse>(token);
     } catch {
       throw new UnauthorizedException('invalid jwt token');
     }
@@ -43,10 +55,10 @@ export class AuthService {
     }
   }
 
-  async login(loginDto: LoginRequestDto): Promise<LoginResponse> {
+  async login(loginDto: LoginRequestDto): Promise<AuthResponse> {
     try {
       const { data } = await firstValueFrom(
-        this.httpService.post<LoginResponse>(
+        this.httpService.post<AuthResponse>(
           `${serviceConfig.users.url}/login`,
           loginDto,
           {
@@ -61,10 +73,10 @@ export class AuthService {
     }
   }
 
-  async register(registerDto: RegisterRequestDto) {
+  async register(registerDto: RegisterRequestDto): Promise<AuthResponse> {
     try {
       const { data } = await firstValueFrom(
-        this.httpService.post<RegisterResponse>(
+        this.httpService.post<AuthResponse>(
           `${serviceConfig.users.url}/auth/register`,
           registerDto,
           {
@@ -79,30 +91,3 @@ export class AuthService {
     }
   }
 }
-
-type User = {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  status: string;
-};
-
-type UserSession = {
-  valid: boolean;
-  user: User | null;
-};
-
-type LoginResponse = {
-  accessToken: string;
-  refreshToken: string;
-  user: User;
-};
-
-type RegisterResponse = {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-};
