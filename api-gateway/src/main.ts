@@ -14,7 +14,7 @@ const bootstrap = async () => {
         directives: {
           defaultSrc: ["'self'"],
           scriptSrc: ["'self'"],
-          styleSrc: ["'self'", "'unsafe-inline"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
           imgSrc: ["'self'", 'data', 'https:'],
         },
       },
@@ -121,7 +121,24 @@ Use the **Authorize** button to provide your JWT Bearer token when accessing pro
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+      filter: true,
+      docExpansion: 'list',
+    },
+    customSiteTitle: 'Marketplace API Gateway Documentation',
+    customCss: `
+    .swagger-ui .topbar {
+      display: none;
+    }
+    .swagger-ui .info .title {
+      color: #3b82f6;
+      font-size: 36px;
+      font-weight: 700;
+    }
+  `,
+  });
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
