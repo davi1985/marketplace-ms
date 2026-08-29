@@ -1,0 +1,33 @@
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { Observable } from 'rxjs';
+import { AuthService } from '../service/auth/auth.service';
+
+@Injectable()
+export class SessionGuard implements CanActivate {
+  constructor(private readonly authService: AuthService) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const sessionToken = request.headers['x-session-token'];
+
+    if (!sessionToken)
+      throw new UnauthorizedException('session token required');
+
+    try {
+      const session = await this.authService.validateSessionToken(sessionToken);
+
+      if (!session.valid || !session.user)
+        throw new UnauthorizedException('invalid token token');
+
+      request.user = session.user;
+      return true;
+    } catch {
+      throw new UnauthorizedException('session token required');
+    }
+  }
+}
