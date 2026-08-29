@@ -2,6 +2,8 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { firstValueFrom } from 'rxjs';
+import { LoginRequestDto } from 'src/auth/dtos/login.dto';
+import { RegisterRequestDto } from 'src/auth/dtos/register.dto';
 import { serviceConfig } from 'src/config/gateway.config';
 
 export type JwtTokenPayload = {
@@ -41,7 +43,7 @@ export class AuthService {
     }
   }
 
-  async login(loginDto: LoginDTO): Promise<LoginResponse> {
+  async login(loginDto: LoginRequestDto): Promise<LoginResponse> {
     try {
       const { data } = await firstValueFrom(
         this.httpService.post<LoginResponse>(
@@ -59,7 +61,7 @@ export class AuthService {
     }
   }
 
-  async register(registerDto: RegisterDTO) {
+  async register(registerDto: RegisterRequestDto) {
     try {
       const { data } = await firstValueFrom(
         this.httpService.post<RegisterResponse>(
@@ -103,15 +105,4 @@ type RegisterResponse = {
   email: string;
   firstName: string;
   lastName: string;
-};
-
-type LoginDTO = {
-  email: string;
-  password: string;
-};
-
-type RegisterDTO = {
-  name: string;
-  email: string;
-  password: string;
 };
