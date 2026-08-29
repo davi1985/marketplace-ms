@@ -4,6 +4,13 @@ import { JwtService } from '@nestjs/jwt';
 import { firstValueFrom } from 'rxjs';
 import { serviceConfig } from 'src/config/gateway.config';
 
+export type JwtTokenPayload = {
+  token: string;
+  sub: string;
+  email: string;
+  role: string;
+};
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -11,9 +18,9 @@ export class AuthService {
     private readonly httpService: HttpService,
   ) {}
 
-  validateJwtToken(token: string): Promise<any> {
+  validateJwtToken(token: string): JwtTokenPayload {
     try {
-      return this.jwtService.verify(token);
+      return this.jwtService.verify<JwtTokenPayload>(token);
     } catch {
       throw new UnauthorizedException('invalid jwt token');
     }
