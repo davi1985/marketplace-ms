@@ -65,9 +65,45 @@ const bootstrap = async () => {
 
   const config = new DocumentBuilder()
     .setTitle('API Gateway')
-    .setDescription('API Gateway for the Marketplace Microservices')
+    .setDescription(
+      `## Marketplace API Gateway
+Central API Gateway responsible for routing and managing requests
+across the Marketplace microservices ecosystem.
+
+### Available Services
+
+- **User Service** — Authentication and user management
+- **Products Service** — Product catalog and management
+- **Checkout Service** — Cart and order processing
+- **Payments Service** — Payment processing
+
+### Authentication
+
+Protected endpoints require authentication using one of the following mechanisms:
+
+- **JWT Bearer Token** — Used to authenticate API requests
+- **Session Token** — Used for session validation
+
+Use the **Authorize** button to provide your JWT Bearer token when accessing protected endpoints.`,
+    )
     .setVersion('1.0')
-    .addBearerAuth()
+    .setContact(
+      'Marketplace Team',
+      'https://marketplace.com',
+      'dev@marketplace.com',
+    )
+    .setLicense('MIT', 'https://opensource.org/licenses/MIT')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'JWT-auth',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
